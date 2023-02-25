@@ -43,7 +43,7 @@ public class TransfigurationController {
         Resource resource = new FileSystemResource(response.getFile());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=" + video.getOriginalFilename())
+                        "attachment; filename=" + response.getOriginalFilename())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .contentLength(resource.contentLength())
                 .body(resource);
