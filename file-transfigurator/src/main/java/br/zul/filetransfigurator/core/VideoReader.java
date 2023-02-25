@@ -6,8 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
-
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameConverter;
@@ -15,6 +13,7 @@ import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_videoio.VideoCapture;
 
 import br.zul.filetransfigurator.properties.ImageProperties;
+import lombok.Cleanup;
 
 public class VideoReader extends InputStream {
 
@@ -23,10 +22,12 @@ public class VideoReader extends InputStream {
     private final Java2DFrameConverter java2DFrameConverter = new Java2DFrameConverter();
     private final OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
     private final DataInputStream dataInputStream;
+    private final ImageReaderFactory imageReaderFactory;
     private ImageReader imageReader;
     private boolean finished;
 
-    public VideoReader(File videoFile, ImageProperties imageProperties) {
+    public VideoReader(File videoFile, ImageProperties imageProperties, ImageReaderFactory imageReaderFactory) {
+        this.imageReaderFactory = imageReaderFactory;
         this.imageProperties = imageProperties;
         this.videoCapture = new VideoCapture(videoFile.getAbsolutePath());
         this.dataInputStream = new DataInputStream(this);
@@ -60,6 +61,7 @@ public class VideoReader extends InputStream {
     public String readString() throws IOException {
         int length = readInt();
         byte[] buffer = new byte[length];
+        readNBytes(4);
         read(buffer);
         return new String(buffer, "utf-8");
     }
@@ -69,18 +71,15 @@ public class VideoReader extends InputStream {
         videoCapture.release();
     }
 
-    private void nextImage() {
+    private void nextImage() throws IOException {
+        @Cleanup
         Mat mat = new Mat();
+        if (!videoCapture.isOpened()) {
+            throw new IOException("Video is not open");
+        }
         if (videoCapture.read(mat)) {
             BufferedImage image = convertToImage(mat);
-            try {
-                ImageIO.write(image, "png",
-                        new File(
-                                "C:\\Users\\luizh\\OneDrive\\Documentos\\NodeJS\\Publico\\file-transfigurator\\example\\test.png"));
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            imageReader = new ImageReader(image, imageProperties);
+            imageReader = imageReaderFactory.create(image, imageProperties);
         } else {
             finished = true;
         }

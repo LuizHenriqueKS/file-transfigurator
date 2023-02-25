@@ -1,8 +1,8 @@
 video:
     width: 720
     height: 512
-    bytePerRow: 72
-    bytePerCol: 64
+    pixelPerRow: 72
+    pixelPerCol: 64
     frameRate: 1
     durationPerImage: 1
 

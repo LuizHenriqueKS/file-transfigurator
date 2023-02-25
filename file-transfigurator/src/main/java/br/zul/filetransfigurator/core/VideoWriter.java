@@ -24,10 +24,10 @@ public class VideoWriter extends OutputStream {
     private final ImageProperties imageProperties;
     private boolean firstImage = true;
 
-    public VideoWriter(File videoFile, ImageProperties imageProperties) {
+    public VideoWriter(File videoFile, ImageProperties imageProperties, ImageBuilderFactory imageBuilderFactory) {
         this.imageProperties = imageProperties;
         this.videoFile = videoFile;
-        this.imageBuilder = new ImageBuilder(imageProperties);
+        this.imageBuilder = imageBuilderFactory.create(imageProperties);
         this.recorder = new FFmpegFrameRecorder(videoFile, imageProperties.getWidth(), imageProperties.getHeight());
         recorder.setVideoCodec(org.bytedeco.ffmpeg.global.avcodec.AV_CODEC_ID_MPEG4);
         this.recorder.setFrameRate(imageProperties.getFrameRate());

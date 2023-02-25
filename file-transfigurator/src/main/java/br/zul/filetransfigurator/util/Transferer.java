@@ -17,11 +17,20 @@ public class Transferer {
     @Builder.Default
     private int bufferSize = 4096;
 
+    private Long maxSize;
+
     public void transfer() throws IOException {
         byte[] buffer = new byte[bufferSize];
         int len;
+        long size = 0;
         while ((len = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, len);
+            size += len;
+            if (maxSize != null && size > maxSize) {
+                outputStream.write(buffer, 0, len - (int) (size - maxSize));
+                break;
+            } else {
+                outputStream.write(buffer, 0, len);
+            }
         }
     }
 

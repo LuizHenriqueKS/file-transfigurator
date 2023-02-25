@@ -18,8 +18,8 @@ public class ImageProperties {
 
     private int width;
     private int height;
-    private int bytePerRow;
-    private int bytePerCol;
+    private int pixelPerRow;
+    private int pixelPerCol;
     private int frameRate;
     private int durationPerImage;
 
