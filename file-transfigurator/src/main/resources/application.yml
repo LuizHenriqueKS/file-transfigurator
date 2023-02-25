@@ -1,0 +1,17 @@
+video:
+    width: 720
+    height: 512
+    bytePerRow: 72
+    bytePerCol: 64
+    frameRate: 1
+    durationPerImage: 1
+
+server:
+    tomcat:
+        max-swallow-size: 5GB
+
+spring:
+    servlet:
+        multipart:
+            max-file-size: 5GB
+            max-request-size: 5GB
